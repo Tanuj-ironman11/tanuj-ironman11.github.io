@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Musik OG card (1200x630)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Italiana&family=Source+Serif+4:ital,opsz,wght@1,8..60,500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --acc: hsl(355 86% 58%);
+        --ink: #f2f2f6;
+        --mute: #9d9da9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: #050506;
+      }
+      .og {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #050506;
+        color: var(--ink);
+        font-family: "Instrument Sans", system-ui, sans-serif;
+        padding: 72px 84px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .og::before {
+        content: "";
+        position: absolute;
+        right: -180px;
+        top: -200px;
+        width: 760px;
+        height: 760px;
+        border-radius: 50%;
+        background: radial-gradient(
+          closest-side,
+          color-mix(in srgb, var(--acc) 55%, transparent),
+          transparent
+        );
+        filter: blur(40px);
+        opacity: 0.55;
+      }
+      .og > * {
+        position: relative;
+      }
+      .mark {
+        font-weight: 700;
+        font-size: 34px;
+        letter-spacing: -0.03em;
+      }
+      .mark::after {
+        content: "";
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--acc);
+        margin-left: 5px;
+      }
+      h1 {
+        margin: 0;
+        font-family: Italiana, "Iowan Old Style", Georgia, serif;
+        font-weight: 400;
+        font-size: 124px;
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+      h1 em {
+        font-family: "Source Serif 4", Georgia, serif;
+        font-style: italic;
+        font-weight: 500;
+        color: var(--acc);
+      }
+      .sub {
+        margin: 26px 0 0;
+        font-size: 30px;
+        color: var(--mute);
+      }
+      .chips {
+        display: flex;
+        gap: 12px;
+      }
+      .chips span {
+        padding: 8px 20px;
+        border-radius: 99px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.05);
+        font-size: 22px;
+        color: var(--mute);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="og" id="og">
+      <div class="mark">Musik</div>
+      <div>
+        <h1>Your music,<br /><em>at full quality.</em></h1>
+        <p class="sub">A free player for your own files. Windows.</p>
+      </div>
+      <div class="chips">
+        <span>FLAC</span><span>MP3</span><span>WAV</span><span>AIFF</span
+        ><span>OGG</span><span>OPUS</span><span>AAC</span><span>M4A</span
+        ><span>ALAC</span>
+      </div>
+    </div>
+  </body>
+</html>

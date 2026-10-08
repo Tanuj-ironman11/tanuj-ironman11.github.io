@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Musik docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Italiana&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      document.documentElement.dataset.theme =
+        localStorage.theme ||
+        (matchMedia("(prefers-color-scheme:light)").matches ? "light" : "dark");
+      document.documentElement.dataset.bg = "cover";
+      try {
+        var h = sessionStorage.hue;
+        if (h)
+          document.documentElement.style.setProperty(
+            "--acc",
+            "hsl(" +
+              h +
+              " " +
+              (document.documentElement.dataset.theme === "dark"
+                ? "86% 58%"
+                : "80% 46%") +
+              ")",
+          );
+      } catch (e) {}
+    </script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+    <nav>
+      <a class="logo" href="index.html">Musik</a><a href="index.html">Home</a
+      ><a href="docs.html" aria-current="page">Docs</a
+      ><a
+        class="x"
+        href="https://github.com/Tanuj-ironman11/Musik/releases"
+        target="_blank"
+        rel="noopener"
+        >Changelog</a
+      ><a
+        class="gh"
+        href="https://github.com/Tanuj-ironman11/Musik"
+        aria-label="GitHub"
+        title="GitHub"
+        ><svg viewBox="0 0 24 24">
+          <path
+            d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"
+          /></svg
+        ><span class="stars" hidden></span></a
+      ><a class="btn main sm" href="download.html">Download</a>
+    </nav>
+    <main class="wrap docs">
+      <aside class="side">
+        <input
+          type="search"
+          placeholder="Search docs"
+          aria-label="Search docs"
+        />
+        <h4>Getting started</h4>
+        <a href="#intro">Introduction</a><a href="#install">Installing a mod</a>
+        <h4>Mods</h4>
+        <a href="#manifest">manifest.json</a><a href="#theme-css">Theme CSS</a
+        ><a href="#scripts">Scripts</a>
+        <h4>API reference</h4>
+        <a href="#api">window.Musik</a><a href="#events">Events</a>
+        <h4>Guides</h4>
+        <a href="#example">Example mod</a><a href="#sandbox">Sandbox</a>
+      </aside>
+      <article class="doc">
+        <div class="crumb">Docs / Mods</div>
+        <h1>Mod guide</h1>
+        <p class="lead">
+          Everything you need to restyle Musik or add features to it, without
+          touching the app itself.
+        </p>
+        <h2 id="intro">Introduction</h2>
+        <p>
+          A mod is a folder inside <code>mods/</code>. On launch Musik reads
+          each folder, injects its CSS, then runs its JavaScript.
+        </p>
+        <pre><code>mods/
+  my-theme/
+    manifest.json
+    theme.css    # injected into &lt;head&gt;
+    index.js     # runs sandboxed after the page is ready</code></pre>
+        <h2 id="install">Installing a mod</h2>
+        <p>
+          Drop the folder into <code>mods/</code> next to the app and restart
+          Musik. To remove it, delete the folder.
+        </p>
+        <div class="call">
+          <p>
+            Only install mods from people you trust. They run inside the
+            sandbox, but they can still change what you see.
+          </p>
+        </div>
+        <h2 id="manifest">manifest.json</h2>
+        <p>Describes the mod. Name, version and author are the basics.</p>
+        <pre><code>{ "name": "My Theme", "version": "1.0.0", "author": "you" }</code></pre>
+        <h2 id="theme-css">Theme CSS</h2>
+        <p>
+          <code>theme.css</code> is injected into the page head, so it can
+          override any style in the app. Set <code>--accent</code> to change the
+          accent color.
+        </p>
+        <h2 id="scripts">Scripts</h2>
+        <p>
+          <code>index.js</code> runs once the page is ready and receives
+          <code>window.Musik</code>. <code>window.Aurelius</code> still works as
+          an old alias.
+        </p>
+        <h2 id="api">window.Musik</h2>
+        <p>The API only grows. Existing keys are never removed or renamed.</p>
+        <table>
+          <tr>
+            <th>Namespace</th>
+            <th>Methods</th>
+          </tr>
+          <tr>
+            <td><code>player</code></td>
+            <td>play, pause, seek, setVolume, getState, getCurrentTrack</td>
+          </tr>
+          <tr>
+            <td><code>library</code></td>
+            <td>getTracks, getPlaylists</td>
+          </tr>
+          <tr>
+            <td><code>queue</code></td>
+            <td>mirrors the queue manager</td>
+          </tr>
+          <tr>
+            <td><code>ui</code></td>
+            <td>
+              injectCSS, injectElement, removeElement, getView, onViewChange
+            </td>
+          </tr>
+          <tr>
+            <td><code>events</code></td>
+            <td>on, off, emit</td>
+          </tr>
+          <tr>
+            <td><code>theme</code></td>
+            <td>setVar, getAccent</td>
+          </tr>
+        </table>
+        <h2 id="events">Events</h2>
+        <p>Listen with <code>Musik.events.on(name, fn)</code>.</p>
+        <table>
+          <tr>
+            <th>Event</th>
+            <th>Fires when</th>
+          </tr>
+          <tr>
+            <td><code>trackupdate</code></td>
+            <td>the current track changes</td>
+          </tr>
+          <tr>
+            <td><code>play</code> / <code>pause</code></td>
+            <td>playback starts or stops</td>
+          </tr>
+          <tr>
+            <td><code>seek</code></td>
+            <td>the position jumps</td>
+          </tr>
+          <tr>
+            <td><code>artupdate</code></td>
+            <td>album art changes</td>
+          </tr>
+          <tr>
+            <td><code>viewchange</code></td>
+            <td>the user opens another page</td>
+          </tr>
+        </table>
+        <h2 id="example">Example mod</h2>
+        <pre><code>Musik.theme.setVar('--accent', '#ff6a5c');
+Musik.events.on('trackupdate', t =&gt; {
+  Musik.ui.injectElement('#np-badge', t.title);
+});</code></pre>
+        <h2 id="sandbox">Sandbox</h2>
+        <p>
+          Mods run in sandboxed frames or Workers inside the window, never in
+          the main process. A broken mod can't freeze the app or stop your
+          music.
+        </p>
+        <div class="pn">
+          <a href="index.html"><span>Back</span><b>Home</b></a
+          ><a href="download.html"><span>Next</span><b>Download</b></a>
+        </div>
+      </article>
+      <aside class="toc"><h4>On this page</h4></aside>
+    </main>
+    <div class="wrap">
+      <footer>
+        <span>Musik, free and yours</span>
+        <div class="fl">
+          <a href="docs.html">Docs</a
+          ><a href="https://github.com/Tanuj-ironman11/Musik/releases"
+            >Changelog</a
+          ><a href="https://github.com/Tanuj-ironman11/Musik/issues"
+            >Report a bug</a
+          ><a href="https://github.com/Tanuj-ironman11/Musik">GitHub</a>
+        </div>
+      </footer>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
