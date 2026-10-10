@@ -108,6 +108,11 @@
       const w = nav.offsetWidth,
         h = nav.offsetHeight;
       if (!w || !h) return;
+      // the page scales with the root font size, so the lens does too (1 at the 16px base)
+      const rs = parseFloat(getComputedStyle(root).fontSize) / 16,
+        bz = BEZEL * rs,
+        rm = RIM * rs;
+      s.querySelector("feDisplacementMap").setAttribute("scale", PUSH * 2 * rs);
       const c = d.createElement("canvas"),
         c2 = d.createElement("canvas");
       c.width = c2.width = w;
@@ -128,14 +133,14 @@
           let vx = 0,
             vy = 0,
             a = 0;
-          if (edge < BEZEL && dist > 0) {
+          if (edge < bz && dist > 0) {
             const k =
-              bend[Math.round((Math.max(edge, 0) / BEZEL) * (STEPS - 1))];
+              bend[Math.round((Math.max(edge, 0) / bz) * (STEPS - 1))];
             vx = (-dx / dist) * k;
             vy = (-dy / dist) * k;
-            if (edge >= 0 && edge < RIM) {
+            if (edge >= 0 && edge < rm) {
               const lit = (dx * lx + dy * ly) / dist;
-              a = lit * lit * Math.pow(1 - edge / RIM, 2) * SHINE;
+              a = lit * lit * Math.pow(1 - edge / rm, 2) * SHINE;
             }
           }
           const i = (y * w + x) * 4;
@@ -277,54 +282,59 @@
         return null;
       }
     };
-    Promise.allSettled(
-      [...slides.querySelectorAll("img")].map((i) => i.decode()),
-    ).then(() => {
-      const imgs = [...slides.querySelectorAll("img")].filter((i) => {
-        if (i.naturalWidth) return true;
-        i.remove();
-        return false;
-      });
-      if (!imgs.length) return;
-      const hues = imgs.map((i) => {
-        const p = pick(i);
-        return p != null ? p : i.dataset.hue ? +i.dataset.hue : null;
-      });
-      const dots = d.querySelector(".dots");
-      const show = (n) => {
-        cur = n;
-        imgs.forEach((im, i) => im.classList.toggle("on", i === n));
-        [...dots.children].forEach((b, i) => b.classList.toggle("on", i === n));
-        if (hues[n] != null) setAcc(hues[n]);
-      };
+    // Start as soon as the FIRST shot decodes. The rest decode in the background;
+    // rotation and dots wait for them, so a slow later image never delays the first one.
+    let all = [...slides.querySelectorAll("img")];
+    let hues = all.map(() => null);
+    const dots = d.querySelector(".dots");
+    const show = (n) => {
+      cur = n;
+      all.forEach((im, i) => im.classList.toggle("on", i === n));
+      if (dots) [...dots.children].forEach((b, i) => b.classList.toggle("on", i === n));
+      if (hues[n] != null) setAcc(hues[n]);
+    };
+    const hueOf = (img, i) => {
+      const p = pick(img);
+      return p != null ? p : img.dataset.hue ? +img.dataset.hue : null;
+    };
+    const first = all[0];
+    if (!first) return;
+    first.decode().then(() => {
+      hues[0] = hueOf(first, 0);
       slides.classList.add("js");
       show(0);
-      if (
-        imgs.length < 2 ||
-        matchMedia("(prefers-reduced-motion:reduce)").matches
-      )
-        return;
-      imgs.forEach((_, i) => {
-        const b = d.createElement("button");
-        b.setAttribute("aria-label", "Show screenshot " + (i + 1));
-        b.onclick = () => {
-          held = false;
-          show(i);
-          start();
+      if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+      // decode the rest in the background, then drop any that failed
+      Promise.allSettled(all.slice(1).map((i) => i.decode())).then(() => {
+        all = all.filter((i) => {
+          if (i.naturalWidth) return true;
+          i.remove();
+          return false;
+        });
+        hues = all.map((img, i) => (i === 0 ? hues[0] : hueOf(img, i)));
+        if (all.length < 2) return;
+        all.forEach((_, i) => {
+          const b = d.createElement("button");
+          b.setAttribute("aria-label", "Show screenshot " + (i + 1));
+          b.onclick = () => {
+            held = false;
+            show(i);
+            start();
+          };
+          dots.appendChild(b);
+        });
+        const start = () => {
+          clearInterval(timer);
+          if (held) return;
+          timer = setInterval(() => show((cur + 1) % all.length), 5000);
         };
-        dots.appendChild(b);
+        const box = slides.parentNode;
+        box.onmouseenter = () => clearInterval(timer);
+        box.onmouseleave = start;
+        show(cur);
+        start();
       });
-      const start = () => {
-        clearInterval(timer);
-        if (held) return;
-        timer = setInterval(() => show((cur + 1) % imgs.length), 5000);
-      };
-      const box = slides.parentNode;
-      box.onmouseenter = () => clearInterval(timer);
-      box.onmouseleave = start;
-      show(0);
-      start();
-    });
+    }, () => {});
   }
 
   // feature card: hover a cover to recolor the mini player, click to recolor the page
